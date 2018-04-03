@@ -1,8 +1,10 @@
-import axios from 'axios'
-export const COINS = 'COINS'
-export const ADD_COIN = 'ADD_COIN'
-export const REMOVE_COIN = 'REMOVE_COIN'
+import axios from 'axios';
+export const COINS = 'COINS';
+export const ADD_COIN = 'ADD_COIN';
+export const REMOVE_COIN = 'REMOVE_COIN';
 
+// dispatch(getCoins())
+// dispatch({ type: 'TEST', payload: 'hello' })
 export const getCoins = () => {
   return (dispatch) => {
     axios.get('/api/coins')
