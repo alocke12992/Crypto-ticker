@@ -3,16 +3,18 @@ import {connect} from 'react-redux';
 import {
   Table,
   Header,
-  Divider
+  Divider,
+  Button,
 } from 'semantic-ui-react';
 import {Link} from 'react-router-dom';
 import {getCoins} from '../actions/coins';
 
 class CoinList extends React.Component {
+  state = {filter: 'priceSort', asc: 1}
 
   componentDidMount() {
     const {dispatch} = this.props;
-    this.props.dispatch(getCoins())
+    dispatch(getCoins())
     this.ticker = setInterval(() => {
       dispatch(getCoins())
     }, 60000)
@@ -22,11 +24,59 @@ class CoinList extends React.Component {
     clearInterval(this.ticker)
   }
 
+  changeFilter = (filter) => {
+    const {asc} = this.state;
+    if (filter === this.state.filter)
+      this.setState({filter, asc: -asc})
+    else
+      this.setState({filter});
+  }
+
+  priceSort = (x, y) => {
+    const {asc} = this.state
+    if (x.price < y.price)
+      return asc
+    if (x.price > y.price)
+      return - asc
+    return 0
+  }
+
+  nameSort = (x, y) => {
+    const {asc} = this.state
+    if (x.name < y.name)
+      return asc
+    if (x.name > y.name)
+      return - asc
+    return 0
+  }
+
+  symbSort = (x, y) => {
+    const {asc} = this.state
+    if (x.symbol < y.symbol)
+      return asc
+    if (x.symbol > y.symbol)
+      return - asc
+    return 0
+  }
+
+  getSort = () => {
+    return this[this.state.filter]
+  }
+
   render() {
     const {coins} = this.props;
     return (
       <div>
         <Divider />
+        <Button onClick={() => this.changeFilter('priceSort')}>
+          Price
+        </Button>
+        <Button onClick={() => this.changeFilter('nameSort')}>
+          Name
+        </Button>
+        <Button onClick={() => this.changeFilter('symbSort')}>
+          Symbol
+        </Button>
         <Table celled striped>
           <Table.Header>
             {['Symbol', 'Name', 'Price']
@@ -38,7 +88,7 @@ class CoinList extends React.Component {
             }
           </Table.Header>
           <Table.Body>
-            {coins.map(coin => {
+            {coins.sort(this.getSort()).map(coin => {
               const {price, name, symbol, id, cmc_id} = coin
               return (
                 <Table.Row key={id}>
